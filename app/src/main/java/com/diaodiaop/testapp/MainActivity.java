@@ -75,23 +75,23 @@ public class MainActivity extends Activity {
             Intent intent;
             if (url.startsWith("intent://")) {
                 intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-                if (intent.resolveActivity(getPackageManager()) != null) {
+                try {
                     startActivity(intent);
-                    return true;
-                }
-                String fallback = intent.getStringExtra("browser_fallback_url");
-                if (fallback != null && (fallback.startsWith("http://") || fallback.startsWith("https://"))) {
-                    webView.loadUrl(fallback);
+                } catch (Exception noHandler) {
+                    String fallback = intent.getStringExtra("browser_fallback_url");
+                    if (fallback != null && (fallback.startsWith("http://") || fallback.startsWith("https://"))) {
+                        webView.loadUrl(fallback);
+                    } else {
+                        Toast.makeText(this, "没有找到能够打开此链接的应用", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 return true;
             }
 
             intent = new Intent(Intent.ACTION_VIEW, uri);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "没有找到能够打开此链接的应用：" + scheme, Toast.LENGTH_SHORT).show();
-            }
+            // Start directly: Android can launch matching apps even when package
+            // visibility rules prevent resolveActivity() from listing them.
+            startActivity(intent);
         } catch (Exception ex) {
             Toast.makeText(this, "无法打开外部应用：" + scheme, Toast.LENGTH_SHORT).show();
         }
