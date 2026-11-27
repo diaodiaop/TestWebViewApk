@@ -10,7 +10,9 @@ android {
         applicationId 'com.diaodiaop.testapp'
         minSdk 23
         targetSdk 28
-        versionCode 1
-        versionName '1.0'
+
+        // GitHub Actions 通过 -P 参数传入递增版本号
+        versionCode (project.findProperty("VERSION_CODE") ?: "1").toInteger()
+        versionName (project.findProperty("VERSION_NAME") ?: "1.0")
     }
 }
